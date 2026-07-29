@@ -320,6 +320,61 @@ def cv_cmd(
     fmt: str = typer.Option("md", "--format", "-f", help="Output format: md or pdf"),
 ) -> None:
     """Build Markdown + text CV from your profile."""
+
+# Root-level match command for offline matching
+@app.command("match")
+def match_root(
+    top: int = typer.Option(10, "--top", "-k", min=1, max=50),
+    job_id: str | None = typer.Option(None, "--job-id", "-j"),
+    resume_file: Path | None = typer.Option(
+        None,
+        "--resume-file",
+        "-r",
+        exists=True,
+        readable=True,
+        help="Offline: profile JSON file (instead of stored profile)",
+    ),
+    jobs_file: Path | None = typer.Option(
+        None,
+        "--jobs-file",
+        "-f",
+        exists=True,
+        readable=True,
+        help="Offline: jobs JSON file (instead of stored jobs)",
+    ),
+    skill_weight: float = typer.Option(
+        DEFAULT_MATCH_WEIGHTS.skills,
+        "--skill-weight",
+        min=0.0,
+        help="Maximum score contribution from profile skill matches",
+    ),
+    title_weight: float = typer.Option(
+        DEFAULT_MATCH_WEIGHTS.title,
+        "--title-weight",
+        min=0.0,
+        help="Maximum score contribution from headline/title overlap",
+    ),
+    location_weight: float = typer.Option(
+        DEFAULT_MATCH_WEIGHTS.location,
+        "--location-weight",
+        min=0.0,
+        help="Maximum score contribution from location or remote fit",
+    ),
+) -> None:
+    """Root-level command delegating to jobs_match for backward compatibility.
+    Mirrors the `nerajob jobs match` subcommand, allowing users to run
+    `nerajob match` directly.
+    """
+    # Re-use the existing implementation to keep behavior identical.
+    return jobs_match(
+        top=top,
+        job_id=job_id,
+        resume_file=resume_file,
+        jobs_file=jobs_file,
+        skill_weight=skill_weight,
+        title_weight=title_weight,
+        location_weight=location_weight,
+    )
     profile = load_profile()
     if not profile:
         console.print("[red]No profile. Run: nerajob profile init[/red]")
