@@ -8,7 +8,7 @@ from typing import Any
 
 import httpx
 
-from nerajob.config import http_timeout, user_agent
+from nerajob.config import http_timeout
 from nerajob.models import JobPosting
 from nerajob.scrapers.base import BaseScraper
 
@@ -191,7 +191,7 @@ class USAJobsScraper(BaseScraper):
 
         # Extract locations
         loc_objs = desc.get("PositionLocation", []) or []
-        loc_names = [l.get("LocationName", "") for l in loc_objs if l.get("LocationName")]
+        loc_names = [loc.get("LocationName", "") for loc in loc_objs if loc.get("LocationName")]
         location = ", ".join(loc_names) if loc_names else "Remote"
 
         # Extract description

@@ -8,7 +8,6 @@ from rich.table import Table
 from nerajob import __version__
 from nerajob.match import SKILL_ALIASES, extract_skills_from_text
 from nerajob.apply.assistant import prepare_application
-from nerajob.cv.builder import write_cv_files
 from nerajob.match import DEFAULT_MATCH_WEIGHTS, MatchWeights
 from nerajob.models import JobPosting
 from nerajob.scrapers.registry import available_scrapers, get_scraper
@@ -375,20 +374,6 @@ def match_root(
         title_weight=title_weight,
         location_weight=location_weight,
     )
-    profile = load_profile()
-    if not profile:
-        console.print("[red]No profile. Run: nerajob profile init[/red]")
-        raise typer.Exit(code=1)
-    paths = write_cv_files(profile, target_role=target, fmt=fmt)
-    if fmt == "pdf" and "pdf" not in paths:
-        console.print(
-            "[yellow]PDF libraries not available.[/yellow] Install optional deps: "
-            "[bold]pip install nerajob[pdf][/bold]"
-        )
-    console.print("[green]CV written:[/green]")
-    for kind, path in paths.items():
-        console.print(f"  {kind}: {path}")
-
 
 @app.command("apply")
 def apply_cmd(
